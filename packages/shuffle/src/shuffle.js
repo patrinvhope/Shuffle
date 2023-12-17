@@ -5,6 +5,7 @@ import Point from './point';
 import Rect from './rect';
 import ShuffleItem from './shuffle-item';
 import Classes from './classes';
+import matchHeightByRow from './match-height-by-row';
 import getNumberStyle from './get-number-style';
 import sorter from './sorter';
 import { onTransitionEnd, cancelTransitionEnd } from './on-transition-end';
@@ -520,6 +521,24 @@ class Shuffle extends TinyEmitter {
    * @private
    */
   _getNextPositions(items) {
+    const elements = items.map(item => item.element);
+    const tempClass = 'is-calculating';
+    //	css:
+    //		height: auto !important;
+    //		opacity: 0 !important;
+    //		position: static !important;
+    //		transform: none !important;
+
+    for (const element of [...elements, this.element]) {
+      element.classList.add(tempClass);
+    }
+
+    matchHeightByRow(elements);
+
+    for (const element of [...elements, this.element]) {
+      element.classList.remove(tempClass);
+    }
+
     // If position data is going to be changed, add the item's size to the
     // transformer to allow for calculations.
     if (this.options.isCentered) {
